@@ -1,0 +1,17 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "Desarrollo api rest bitMusic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "Yotfil",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.9.26"
+  }
+}
