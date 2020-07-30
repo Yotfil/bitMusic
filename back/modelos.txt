@@ -1,4 +1,4 @@
-usuario{
+user{
     nombre
     apellido
     correo
@@ -8,7 +8,7 @@ usuario{
 }
 
 
-canción{
+song{
     número
     nombre
     duración
@@ -26,7 +26,7 @@ album{
 }
 
 
-artista{
+artist{
     nombre
     descripcion
     imagen
