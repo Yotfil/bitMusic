@@ -2,8 +2,12 @@ const mongoose = require('mongoose');//Requerimos mongoose para conectarnos con 
 const app = require('./app');//Requerimos nuestra app que configuramos en le archivo app.js
 const port = 3000;
 
+mongoose.set('useFindAndModify', false);
+mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:27017/bitMusic', (err, res)=>{
+
+
+mongoose.connect('mongodb://localhost:27017/bitMusic', { useNewUrlParser:true, useUnifiedTopology: true }, (err, res)=>{
     if(err){
         console.log('No nos pudimos conectar');
     }else{

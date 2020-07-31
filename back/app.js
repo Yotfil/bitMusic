@@ -1,7 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const fileUpload = require('express-fileupload')
 
 const app = express()
+app.use(fileUpload())
 
 //Rutas
 const user_routes = require('./routes/user')

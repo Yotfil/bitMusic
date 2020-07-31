@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt-nodejs')
 const User = require('../models/user')
+const jwt = require('../services/jwt')
 
 function pruebas(req, res){
     res.status(200).send({
@@ -23,24 +24,33 @@ function create(req, res) {
     user.image = 'null'
 
     if(params.password){
-        bcrypt.hash(params.password, null, null, function(err, hash){
-            user.password = hash
-            if(user.firstName != null && user.lastname != null && user.email != null){
-                if(User.findOne({email:user.email})){
-                    console.log(User.findOne({email:user.email}))
-                    res.status(200).send({message:"El correo ya existe"})
-                }else{
-                user.save((err, userStored)=>{
-                    if(err){
-                        res.status(500).send({message: 'Error al guardar usuario'})
-                    }else{
-                        if(!userStored){
-                            res.status(404).send({message: 'No se ha registrado el usuario'})
-                        }else{
-                            res.status(200).send({user: userStored})
-                        }
+        bcrypt.genSalt(10, (err, salt)=>{
+            if(err){
+                console.log(err)
+            }else{
+                bcrypt.hash(params.password, salt, null, function(err, hash){
+                    user.password = hash
+                    if(user.firstName != null && user.lastname != null && user.email != null){
+                        User.findOne({email:user.email}, (err, userEmail)=>{
+                            if(userEmail){
+                                console.log("Ya existe")
+                                res.status(200).send({message:"El correo ya existe"})
+                            }else{
+                            user.save((err, userStored)=>{
+                                if(err){
+                                    res.status(500).send({message: 'Error al guardar usuario'})
+                                }else{
+                                    if(!userStored){
+                                        res.status(404).send({message: 'No se ha registrado el usuario'})
+                                    }else{
+                                        res.status(200).send({user: userStored})
+                                    }
+                                }
+                            })}
+                        })
+
                     }
-                })}
+                })
             }
         })
     }else{
@@ -67,7 +77,9 @@ function login(req, res){
                 bcrypt.compare(pass, user.password, function(err, check){
                     if(check){
                         if(params.gethash){
-
+                            res.status(200).send({
+                                token: jwt.userToken(user)
+                            })
                         }else{
                             res.status(200).send({user})
                         }
@@ -80,8 +92,70 @@ function login(req, res){
     })
 }
 
+
+function update(req, res){
+    const userId = req.params.id
+    let paramsBody = req.body
+
+    if(paramsBody.password){
+        bcrypt.hash(paramsBody.password, null, null, function(err, hash){
+            paramsBody.password = hash
+            console.log(paramsBody.password)
+            User.findByIdAndUpdate(userId, paramsBody, (err, userUpdated)=>{
+                if(err){
+                    res.status(500).send({message: 'Error al actualizar usuario'})
+                }else{
+                    if(!userUpdated){
+                        res.status(404).send({message: 'No se ha podido actualizar el usuario'})
+                    }else{
+                        res.status(404).send({user: userUpdated})
+                    }
+                }
+            })
+        })
+    }else{
+        User.findByIdAndUpdate(userId, paramsBody, (err, userUpdated)=>{
+            if(err){
+                res.status(500).send({message: 'Error al actualizar usuario'})
+            }else{
+                if(!userUpdated){
+                    res.status(404).send({message: 'No se ha podido actualizar el usuario'})
+                }else{
+                    res.status(404).send({user: userUpdated})
+                }
+            }
+        })
+    }
+}
+
+function uploadImg(req, res){
+    let userImg = req.files.image
+    let nameImgUser = userImg.name
+    let nameImgSplit = nameImgUser.split('\.')
+    let userImgExt = nameImgSplit[1]
+    console.log(nameImgSplit)
+
+    if(userImgExt == 'png' || userImgExt == 'jpg'){
+        userImg.mv(`./assets/users/${nameImgUser}`, (err)=>{
+            if(err){
+                return res.status(500).send({message:'La imagen no se pudo subi'})
+            }else{
+                return res.status(200).send({message:'Imagen subida correctamente'})
+            }
+        })
+    }else{
+        res.status(200).send({message: 'Extension de archivo incorrecta'})
+    }
+
+}
+
+
+
+
 module.exports = {
     pruebas,
     create,
-    login
+    login,
+    update,
+    uploadImg
 }
