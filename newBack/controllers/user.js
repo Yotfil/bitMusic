@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const bcrypt = require('bcrypt-nodejs')
 const EntidadUser = require('../models/user')
 const jwt = require('../services/jwt')
@@ -83,6 +85,7 @@ function login(req,res){
     })
 }
 
+
 //Función de actualizar usuario
 function update(req, res){
     const userId = req.params.id
@@ -121,9 +124,64 @@ function update(req, res){
 }
 
 
+//Función de subir imagen
+function uploadImg(req, res){
+    const userId = req.params.id
+
+    if(req.files){
+        let userImage = req.files.image
+        let nameImgUser = userImage.name
+        let imgSplit = nameImgUser.split('\.')
+        let imgUserExt = imgSplit[1]
+
+        if(imgUserExt == 'png' || imgUserExt == 'jpg'){
+            EntidadUser.findByIdAndUpdate(userId, {image: nameImgUser}, (err, usuarioActualizado)=>{
+                if(err){
+                    res.status(500).send({message: 'No se ha podido subir la imagen'})
+                }else{
+                    if(!usuarioActualizado){
+                        res.status(404).send({message: 'No se encontró ningún usuario'})
+                    }else{
+                        userImage.mv(`./assets/users/${nameImgUser}`, (err)=>{
+                            if(err){
+                                res.status(500).send({message:'No se subió la imagen del usuario'})
+                            }else{
+                                res.status(200).send({user:usuarioActualizado})
+                            }
+                        })
+                    }
+                }
+            })
+        }else{
+            res.status(200).send({message: 'La extensión no es correcta'})
+        }
+    }else{
+        res.status(400).send({message: 'No se ha subido ninguna imagen'})
+    }
+}
+
+
+//Función para taer la imagen
+function getImg(req, res){
+    const nameImgUser = req.params.imgUser
+
+    const imgRoute = `./assets/users/${nameImgUser}`
+
+    fs.exists(imgRoute, function(exists){
+        if(exists){
+            res.sendFile(path.resolve(imgRoute))
+        }else{
+            res.status(200).send({message:'No existe la imagen'})
+        }
+
+    })
+}
+
 module.exports = {
     create,
     login,
-    update
+    update,
+    uploadImg,
+    getImg
 }
 
