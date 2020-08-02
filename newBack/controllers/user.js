@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt-nodejs')
 const EntidadUser = require('../models/user')
+const jwt = require('../services/jwt')
 
 //Función crear Usuario
 function create(req, res){
@@ -52,6 +53,77 @@ function create(req, res){
     }
 }
 
-module.exports = {
-    create
+
+//Función de login
+function login(req,res){
+    let body = req.body
+    let email = body.email
+    let pass = body.password
+
+    EntidadUser.findOne({email: email.toLowerCase()}, (err, usuarioObetnido)=>{
+        if(err){
+            res.status(500).send({message: 'Error en la petición'})
+        }else{
+            if(!usuarioObetnido){
+                res.status(404).send({message: 'No se encontró el usuario'})
+            }else{
+                bcrypt.compare(pass, usuarioObetnido.password, function(err, check){
+                    if(check){
+                        if(body.gethash){
+                            res.status(200).send({token: jwt.userToken(usuarioObetnido)})
+                        }else{
+                            res.status(200).send({user: usuarioObetnido})
+                        }
+                    }else{
+                        res.status(404).send({message: 'El usuario no se ha podido logear'})
+                    }
+                })
+            }
+        }
+    })
 }
+
+//Función de actualizar usuario
+function update(req, res){
+    const userId = req.params.id
+    const body = req.body
+
+
+    if(body.password){
+        bcrypt.hash(body.password, null, null, function(err, hash){
+            body.password = hash
+
+            EntidadUser.findByIdAndUpdate(userId, body, (err, usuarioActualizado)=>{
+                if(err){
+                    res.status(500).send({message: 'Error al actualizar el usuario'})
+                }else{
+                    if(!usuarioActualizado){
+                        res.status(404).send({message: 'No se encontró ningún usuario'})
+                    }else{
+                        res.status(200).send({user: usuarioActualizado})
+                    }
+                }
+            })
+        })
+    }else{
+        EntidadUser.findByIdAndUpdate(userId, body, (err, usuarioActualizado)=>{
+            if(err){
+                res.status(500).send({message: 'Error al actualizar el usuario'})
+            }else{
+                if(!usuarioActualizado){
+                    res.status(404).send({message: 'No se encontró ningún usuario'})
+                }else{
+                    res.status(200).send({user: usuarioActualizado})
+                }
+            }
+        })
+    }
+}
+
+
+module.exports = {
+    create,
+    login,
+    update
+}
+
