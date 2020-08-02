@@ -1,6 +1,9 @@
+const fs = require('fs')
+const path = require('path')
 const bcrypt = require('bcrypt-nodejs')
 const User = require('../models/user')
 const jwt = require('../services/jwt')
+
 
 function pruebas(req, res){
     res.status(200).send({
@@ -108,7 +111,7 @@ function update(req, res){
                     if(!userUpdated){
                         res.status(404).send({message: 'No se ha podido actualizar el usuario'})
                     }else{
-                        res.status(404).send({user: userUpdated})
+                        res.status(200).send({user: userUpdated})
                     }
                 }
             })
@@ -128,25 +131,58 @@ function update(req, res){
     }
 }
 
+
+
 function uploadImg(req, res){
-    let userImg = req.files.image
-    let nameImgUser = userImg.name
-    let nameImgSplit = nameImgUser.split('\.')
-    let userImgExt = nameImgSplit[1]
-    console.log(nameImgSplit)
+    const userId = req.params.id
 
-    if(userImgExt == 'png' || userImgExt == 'jpg'){
-        userImg.mv(`./assets/users/${nameImgUser}`, (err)=>{
-            if(err){
-                return res.status(500).send({message:'La imagen no se pudo subi'})
-            }else{
-                return res.status(200).send({message:'Imagen subida correctamente'})
-            }
-        })
+    if(req.files){
+        let userImage = req.files.image
+        let nameImgUser = userImage.name
+        console.log(nameImgUser)
+        let imgSplit = nameImgUser.split('\.')
+        console.log(imgSplit)
+        let imgUserExt = imgSplit[1]
+
+        if(imgUserExt =='png' || imgUserExt == 'jpg'){
+            User.findByIdAndUpdate(userId, {image:nameImgUser}, (err, userUpdated)=>{
+                if(err){
+                    res.status(500).send({message: 'No se ha podido subir la imágen'})
+                }else{
+                    if(!userUpdated){
+                        res.status(400).send({message: 'No se ha encontrado el usuario'})
+                    }else{
+                        userImage.mv(`./assets/users/${nameImgUser}`, (err)=>{
+                            if(err){
+                                return res.status(500).send({message:'No se subio la imagen del usuario'})
+                            }else{
+                                return res.status(200).send({user:userUpdated})
+                            }
+                        })
+                    }
+                }
+            })
+        }else{
+            res.status(200).send({message: 'Extension de archivo incorrecta'})
+        }
     }else{
-        res.status(200).send({message: 'Extension de archivo incorrecta'})
+        res.status(200).send({message: 'No has subido ninguna imagen'})
     }
+}
 
+
+function getImg(req, res){
+    const imgUser= req.params.imgUser
+
+    const imgRoute = `./assets/users/${imgUser}`
+
+    fs.exists(imgRoute, function(exists){
+        if(exists){
+            res.sendFile(path.resolve(imgRoute))
+        }else{
+            res.status(200).send({message:'No existe la imagen'})
+        }
+    })
 }
 
 
@@ -157,5 +193,6 @@ module.exports = {
     create,
     login,
     update,
-    uploadImg
+    uploadImg,
+    getImg
 }

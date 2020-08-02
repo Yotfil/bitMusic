@@ -10,6 +10,7 @@ api.post('/register', UserController.create)
 api.post('/login', UserController.login)
 api.put('/update/:id', mdAuth.authUser, UserController.update)
 api.post('/upload-image-user/:id', UserController.uploadImg)
+api.get('/get-image-user/:imgUser', UserController.getImg)
 
 module.exports = api;
 
