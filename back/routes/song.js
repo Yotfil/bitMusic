@@ -1,8 +1,20 @@
-module.exports = (app) => {
-    const song = require('../controllers/song')
-    const connectMultiparty = require('connect-multiparty')
-    const uploadSong = connectMultiparty({uploadDir: './assets/songs'})
+// module.exports = (app) => {
+//     const song = require('../controllers/song')
+//     const multipart = require('connect-multiparty')
+//     const uploadSong = multipart({uploadDir: './assets/songs'})
 
-    app.post('/create-song', uploadSong, song.create)
-}
+//     app.post('/create-song', uploadSong, song.create)
+// }
+    const express = require('express')
+    const song = require('../controllers/song')
+
+
+    const api = express.Router()
+    const multipart = require('connect-multiparty')
+    const uploadSong = multipart({uploadDir: './assets/songs'})
+
+    api.post('/create-song', uploadSong, song.create)
+
+    module.exports = api
+
 

@@ -137,36 +137,36 @@ function uploadImg(req, res){
     const userId = req.params.id
 
     if(req.files){
-        let userImage = req.files.image
-        let nameImgUser = userImage.name
-        console.log(nameImgUser)
-        let imgSplit = nameImgUser.split('\.')
-        console.log(imgSplit)
-        let imgUserExt = imgSplit[1]
+        /* Sigue funcionando igual, capturamos la propiedad files para acceder a sus metodos, con la diferencia que como connect-multiparty genera un hash para el nombre ya no usamos la propiedad req.files.image.name para acceder al nombre porque nos daría el nombre con el que subimos (ej: "default.jpg") y necesitamos es que se guarde con el nombre hasheado, entonces accedemos al nombre por medio del path al que se subio en la carpeta de './assets/users',luego si se verifica la extensión y el procedimiento es igual, excepto que ya la imagen no se sube por acá, se sube por el archivo de routes, por medio del middleware. Revisen los console log que quedan ahi para que sepan que devuelve cada uno*/
+        console.log("req.files -->", req.files)
+        const userImage = req.files.image.path
+        console.log("userImage -->", userImage)
+        const imageSplit = userImage.split('\/')
+        console.log("imageSplit -->", imageSplit)
+        const nameImg = imageSplit[imageSplit.length -1]
+        console.log("nameImg -->", nameImg)
+        const extImgSplit = nameImg.split('\.')
+        console.log("extImgSplit -->", extImgSplit)
+        const extImg = extImgSplit[1]
+        console.log("extImg -->", extImg)
 
-        if(imgUserExt =='png' || imgUserExt == 'jpg'){
-            User.findByIdAndUpdate(userId, {image:nameImgUser}, (err, userUpdated)=>{
+        if(extImg == 'png' || extImg == 'jpg'){
+            User.findByIdAndUpdate(userId, {image: nameImg}, (err, user)=>{
                 if(err){
-                    res.status(500).send({message: 'No se ha podido subir la imágen'})
+                    res.status(500).send({message: 'No se ha podido subir la imagen'})
                 }else{
-                    if(!userUpdated){
-                        res.status(400).send({message: 'No se ha encontrado el usuario'})
+                    if(!user){
+                        res.status(404).send({message: 'No se encontró ningún usuario'})
                     }else{
-                        userImage.mv(`./assets/users/${nameImgUser}`, (err)=>{
-                            if(err){
-                                return res.status(500).send({message:'No se subio la imagen del usuario'})
-                            }else{
-                                return res.status(200).send({user:userUpdated})
-                            }
-                        })
+                        res.status(200).send({user})
                     }
                 }
             })
         }else{
-            res.status(200).send({message: 'Extension de archivo incorrecta'})
+            res.status(200).send({message: 'La extensión no es correcta'})
         }
     }else{
-        res.status(200).send({message: 'No has subido ninguna imagen'})
+        res.status(400).send({message: 'No se ha subido ninguna imagen'})
     }
 }
 
