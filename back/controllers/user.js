@@ -3,6 +3,7 @@ const path = require('path')
 const bcrypt = require('bcrypt-nodejs')
 const User = require('../models/user')
 const jwt = require('../services/jwt')
+const { Console } = require('console')
 
 
 function pruebas(req, res){
@@ -11,13 +12,25 @@ function pruebas(req, res){
     })
 }
 
+//Creamos funcion para verificar los errores del CRUD
 
+function verificarError(err, res, data, error404){
+    if(err){
+        res.status(500).send({message: 'Error al conectarnos' })
+    }else{
+        if(!data){
+            res.status(404).send({message: error404})
+        }else{
+            res.status(200).send({user: data})
+        }
+    }
+}
 
 //Función para crear un usuario
 
 function create(req, res) {
     let user = new User()
-
+    
     let params = req.body
 
     user.firstName = params.firstName
@@ -40,15 +53,7 @@ function create(req, res) {
                                 res.status(200).send({message:"El correo ya existe"})
                             }else{
                             user.save((err, userStored)=>{
-                                if(err){
-                                    res.status(500).send({message: 'Error al guardar usuario'})
-                                }else{
-                                    if(!userStored){
-                                        res.status(404).send({message: 'No se ha registrado el usuario'})
-                                    }else{
-                                        res.status(200).send({user: userStored})
-                                    }
-                                }
+                                verificarError(err, res, userStored, 'Error al crear usuario');
                             })}
                         })
 
@@ -105,28 +110,12 @@ function update(req, res){
             paramsBody.password = hash
             console.log(paramsBody.password)
             User.findByIdAndUpdate(userId, paramsBody, (err, userUpdated)=>{
-                if(err){
-                    res.status(500).send({message: 'Error al actualizar usuario'})
-                }else{
-                    if(!userUpdated){
-                        res.status(404).send({message: 'No se ha podido actualizar el usuario'})
-                    }else{
-                        res.status(200).send({user: userUpdated})
-                    }
-                }
+                verificarError(err, res, userUpdated, 'Error al actualizar usuario');
             })
         })
     }else{
         User.findByIdAndUpdate(userId, paramsBody, (err, userUpdated)=>{
-            if(err){
-                res.status(500).send({message: 'Error al actualizar usuario'})
-            }else{
-                if(!userUpdated){
-                    res.status(404).send({message: 'No se ha podido actualizar el usuario'})
-                }else{
-                    res.status(404).send({user: userUpdated})
-                }
-            }
+            verificarError(err, res, userUpdated, 'Error al actualizar usuario');
         })
     }
 }
