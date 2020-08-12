@@ -18,5 +18,3 @@ api.put('/update-song/:idSong', uploadSong, song.update)
 api.get('/getAll/:page', song.findAll)
 
 module.exports = api
-
-

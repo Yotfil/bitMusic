@@ -7,6 +7,7 @@ const { count } = require('../models/song')
  * @param {*} res => Respuesta a retornar.
  */
 function verificarDatos(req, res) {
+    console.log("req --->", req.body)
     if (!req.body) {
         return res.status(400).send({ message: 'El contenido no puede estar vacío' })
     }
@@ -39,6 +40,7 @@ exports.create = (req, res) => {
             name: req.body.name,
             duration: req.body.duration,
             file: obtenerNombreCancion(req),
+            author: req.body.author
         })
 
         song.save().then(data => {
@@ -49,6 +51,9 @@ exports.create = (req, res) => {
             })
         })
     })
+
+
+
 }
 
 /**
@@ -92,16 +97,40 @@ exports.update = (req, res) => {
 
 /**
  * Función creada para obtener todas la canciones
- * @param {*} req
- * @param {*} res
+ * @param {*} req 
+ * @param {*} res 
  */
 exports.findAll = (req, res) => {
     let page = ((req.params.page - 1) * 10)
-    Song.find({}, null, { skip: page, limit: 10 }).then(songs => {
-        res.send(songs)
-    }).catch(error => {
-        res.status(500).send({
-            message: error.message || "Error al obtener las canciones"
+        //Mostrar solo algunos campos se puede hacer así:
+        //'name duration' -> Se separa por espacios
+        //['name', 'duration'] -> Cada campo es un elemento del arreglo
+
+    /** Expresiones Regulares  */
+    //i => Sin importar que los datos estén en mayúscula o minúscula los encontrará.
+    //g => Global
+
+    //`.*${req.params.name}.*` => Sin importar donde esté el patrón el va a mostrar todas las coincidencias
+    //`^${req.params.name}.*` => Especificamos que debe empezar por el patrón.
+    //`${req.params.name}$` => Especificamos que debe terminar por el patrón
+    //`.${req.params.name}` => Va a encontrar todas las coincidencias menos la canciones que empiezan con ese patrón
+
+    /** RUTAS DINAMICAS */
+    /** En la url se escriben así: searchBy=qui
+     * donde searchBy => El nombre del parametro
+     * qui => El valor del parametro.
+     */
+
+    let name = new RegExp(`.*${req.query.searchBy || ''}.*`, 'i')
+
+    Song.find({ name: name }, null, { skip: page, limit: 10 })
+        .populate('author')
+        .exec()
+        .then(songs => {
+            res.send(songs)
+        }).catch(error => {
+            res.status(500).send({
+                message: error.message || "Error al obtener las canciones"
+            })
         })
-    })
 }

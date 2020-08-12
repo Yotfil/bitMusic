@@ -1,1 +1,37 @@
-<p>register-song works!</p>
+<div class="container">
+    <h2> Registrar nueva canción </h2>
+
+    <form [formGroup]="songForm" (ngSubmit)="registerSong()" enctype="multipart/form-data">
+
+        <div class="row">
+            <div class="col">
+                <label>Nombre canción</label>
+                <input id="name" name="name" formControlName="name" type="text">
+                <input id="author" name="author" formControlName="author" type="hidden">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label>Duración de la canción</label>
+                <input id="duration" name="duration" formControlName="duration" type="text">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label> Archivo de la canción </label>
+                <input id="file" name="file" formControlName="file" type="file">
+            </div>
+        </div>
+
+        <div *ngIf="!songForm.get('name').valid || !songForm.get('duration').valid  || !songForm.get('file').valid">
+            <div class="text-danger">
+                Debes llenar todos los campos
+            </div>
+        </div>
+
+
+        <button type="submit"> Enviar </button>
+    </form>
+</div>
