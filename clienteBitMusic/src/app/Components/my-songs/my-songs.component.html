@@ -1,0 +1,13 @@
+<div>
+    <h1> Lista de canciones - {{nombre}} </h1>
+    <div class="container">
+        <div class="row" *ngFor="let song of sons">
+            <div class="col">
+                {{song.name}} - {{ song.duration }}
+            </div>
+            <div class="col">
+                <audio src="{{apiURL+'/getSongFile/'+song.file}}" controls></audio>
+            </div>
+        </div>
+    </div>
+</div>

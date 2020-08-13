@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SongService } from '../../services/song.service';
 
 @Component({
   selector: 'app-register-song',
@@ -9,9 +10,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class RegisterSongComponent implements OnInit {
 
   songForm: FormGroup;
-
+  public file: File;
   constructor(
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private songService: SongService
   ) {
     this.validateForm();
   }
@@ -19,7 +21,6 @@ export class RegisterSongComponent implements OnInit {
   /** Nos permite cargar tareas pesadas. */
   ngOnInit(): void {
   }
-
 
   validateForm(){
     this.songForm = this.formBuilder.group({
@@ -31,8 +32,33 @@ export class RegisterSongComponent implements OnInit {
   }
 
   registerSong(){
-    alert("acá llegó")
+    if(this.songForm.valid){
+      
+      const song = this.songForm.value;
 
+      const formData = new FormData();
+      formData.append('name', song.name);
+      formData.append('duration', song.duration);
+      formData.append('file', this.file);
+      formData.append('author', song.author);
+
+      this.songService.createSong(formData).subscribe(
+        (createdSong) => {
+          console.log("La canción se creó", createdSong)
+        },
+        (error) => {
+          console.error("Error al crear la canción", error)
+        }
+      );
+
+    }else{
+      alert("Error, debes llenar todos los campos")
+    }
+
+  }
+
+  prepareSong(event: any){
+    this.file = <File>event.target.files[0];
   }
 
 

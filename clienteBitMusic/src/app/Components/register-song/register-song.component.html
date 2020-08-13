@@ -3,11 +3,11 @@
 
     <form [formGroup]="songForm" (ngSubmit)="registerSong()" enctype="multipart/form-data">
 
-        <div class="row">
+        <div class="form-group">
             <div class="col">
                 <label>Nombre canción</label>
                 <input id="name" name="name" formControlName="name" type="text">
-                <input id="author" name="author" formControlName="author" type="hidden">
+                <input id="author" name="author" formControlName="author" type="hidden" class="form-control">
             </div>
         </div>
 
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col">
                 <label> Archivo de la canción </label>
-                <input id="file" name="file" formControlName="file" type="file">
+                <input id="file" name="file" formControlName="file" type="file" (change)="prepareSong($event)">
             </div>
         </div>
 
