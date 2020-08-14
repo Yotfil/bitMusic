@@ -1,5 +1,7 @@
 const Song = require('../models/song')
 const { count } = require('../models/song')
+let fs = require('fs');
+const path = require('path')
 
 /**
  * Función la cual permitirá validar si el body está vacío o si existe algún archivo para la canción
@@ -116,7 +118,7 @@ exports.findAll = (req, res) => {
     //`.${req.params.name}` => Va a encontrar todas las coincidencias menos la canciones que empiezan con ese patrón
 
     /** RUTAS DINAMICAS */
-    /** En la url se escriben así: searchBy=qui
+    /** En la url se escriben así: ?searchBy=qui
      * donde searchBy => El nombre del parametro
      * qui => El valor del parametro.
      */
@@ -133,4 +135,29 @@ exports.findAll = (req, res) => {
                 message: error.message || "Error al obtener las canciones"
             })
         })
+}
+
+exports.getSongFile = (req, res) => {
+    const songRoute = './assets/songs/' + req.params.nameSong;
+    fs.exists(songRoute, (exist) => {
+        if (exist) {
+            res.sendFile(path.resolve(songRoute))
+        } else {
+            res.status(404).send({
+                message: "El archivo no existe"
+            })
+        }
+    })
+}
+
+exports.getTotalSongs = (req, res) => {
+    Song.countDocuments().then(count => {
+        res.status(200).send({
+            total: count
+        })
+    }).catch(error => {
+        res.status(500).send({
+            message: error.message || "error al obtener las canciones"
+        })
+    })
 }

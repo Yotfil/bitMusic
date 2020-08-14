@@ -16,5 +16,7 @@ const uploadSong = multipart({ uploadDir: './assets/songs' })
 api.post('/create-song', uploadSong, song.create)
 api.put('/update-song/:idSong', uploadSong, song.update)
 api.get('/getAll/:page', song.findAll)
+api.get('/getSongFile/:nameSong', song.getSongFile)
+api.get('/getTotalSongs', song.getTotalSongs)
 
 module.exports = api
