@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SongService } from '../../services/song.service';
+const swal = require('sweetalert'); 
+/**npm install sweetalert --save
+ *  npm i @types/node
+ * Agregar node al archivo tsconfig.app.json en la sección de types
+ */
 
 @Component({
   selector: 'app-register-song',
@@ -13,7 +19,9 @@ export class RegisterSongComponent implements OnInit {
   public file: File;
   constructor(
     private formBuilder: FormBuilder,
-    private songService: SongService
+    private songService: SongService,
+    private routeParams: ActivatedRoute, //Lo vamos a utilizar para obtener los parametros de la url.
+    private route: Router //Para generar redirecciones
   ) {
     this.validateForm();
   }
@@ -44,7 +52,8 @@ export class RegisterSongComponent implements OnInit {
 
       this.songService.createSong(formData).subscribe(
         (createdSong) => {
-          console.log("La canción se creó", createdSong)
+          swal('Canción creada', "", 'success'); //Mostrar mensajes con sweetalert
+          this.route.navigate(['/misCanciones']);//Redireccionar a otro componente.
         },
         (error) => {
           console.error("Error al crear la canción", error)
@@ -52,7 +61,8 @@ export class RegisterSongComponent implements OnInit {
       );
 
     }else{
-      alert("Error, debes llenar todos los campos")
+      //alert("Error, debes llenar todos los campos")
+      swal('Error', "Error, debes llenar todos los campos", 'error');
     }
 
   }

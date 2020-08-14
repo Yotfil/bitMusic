@@ -1,3 +1,5 @@
+import { SongService } from '../services/song.service';
+
 export interface Song{
     id: String;
     number: Number;
@@ -6,4 +8,3 @@ export interface Song{
     file: File;
     author: String;
 }
-

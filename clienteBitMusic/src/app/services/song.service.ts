@@ -17,8 +17,13 @@ export class SongService {
       return this.http.post<Song>(`${this.apiURL}/create-song`, formData);
     }
 
-    getSongs(){
-      return this.http.get(`${this.apiURL}/getAll/1`)
+    getSongs(filter, page){
+      console.log('Esta es la ruta de page --> ', `${page}`)
+      return this.http.get(`${this.apiURL}/getAll/${page}${filter}`)
+    }
+
+    getTotalSongs(){
+      return  this.http.get(`${this.apiURL}/getTotalSongs`)
     }
 
 }

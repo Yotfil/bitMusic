@@ -1,12 +1,49 @@
 <div>
-    <h1> Lista de canciones - {{nombre}} </h1>
+    <h1> Lista de canciones</h1>
+
     <div class="container">
-        <div class="row" *ngFor="let song of sons">
+        <input aria-label="Search" type="search" placeholder="Buscar canción" class="form-control" (keyup)="loadSongs(page)" [(ngModel)]="search">
+        <div class="row mt-5">
             <div class="col">
-                {{song.name}} - {{ song.duration }}
+                <div class="row mb-2" *ngFor="let song of songs">
+                    <div class="col">
+                        {{song.name}}
+                    </div>
+                    <div class="col">
+                        <input type="hidden" id="{{song.number}}" value="{{song.file}}" />
+                        <i class="fas fa-play-circle icon-player" (click)="changeSong(song.file, song.number)"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <nav aria-label="...">
+                            <ul class="pagination pagination-lg">
+                                <li class="page-item" *ngFor="let page of totalTabs">
+                                    <a class="page-link" (click)="loadSongs(page)">{{page}}</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
-            <div class="col">
-                <audio src="{{apiURL+'/getSongFile/'+song.file}}" controls></audio>
+            <div class="col-8">
+                <div class="row">
+                    <div class="col text-center">
+                        <i class="fas fa-music music-icon"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-right">
+                        <i class="fas fa-backward icon-player" (click)="changeSong('previous')"></i>
+                    </div>
+                    <div class="col-8">
+                        <!--<audio src="{{apiURL+'/getSongFile/'+song.file}}" controls></audio>-->
+                        <audio style="width: 100%;" src="" controls id="player" data-song=""></audio>
+                    </div>
+                    <div class="col text-left">
+                        <i class="fas fa-forward icon-player" (click)="changeSong('next')"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -4,25 +4,19 @@
     <form [formGroup]="songForm" (ngSubmit)="registerSong()" enctype="multipart/form-data">
 
         <div class="form-group">
-            <div class="col">
-                <label>Nombre canción</label>
-                <input id="name" name="name" formControlName="name" type="text">
-                <input id="author" name="author" formControlName="author" type="hidden" class="form-control">
-            </div>
+            <label for="name">Nombre canción</label>
+            <input id="name" name="name" formControlName="name" type="text" class="form-control">
+            <input id="author" name="author" formControlName="author" type="hidden" class="form-control">
         </div>
 
-        <div class="row">
-            <div class="col">
-                <label>Duración de la canción</label>
-                <input id="duration" name="duration" formControlName="duration" type="text">
-            </div>
+        <div class="form-group">
+            <label for="duration">Duración de la canción</label>
+            <input id="duration" name="duration" formControlName="duration" type="text" class="form-control">
         </div>
 
-        <div class="row">
-            <div class="col">
-                <label> Archivo de la canción </label>
-                <input id="file" name="file" formControlName="file" type="file" (change)="prepareSong($event)">
-            </div>
+        <div class="form-group">
+            <label for="file"> Archivo de la canción </label>
+            <input id="file" name="file" formControlName="file" type="file" (change)="prepareSong($event)" class="form-control">
         </div>
 
         <div *ngIf="!songForm.get('name').valid || !songForm.get('duration').valid  || !songForm.get('file').valid">
@@ -31,7 +25,9 @@
             </div>
         </div>
 
+        <div class="text-center">
+            <button type="submit" class="btn btn-info"> Enviar </button>
+        </div>
 
-        <button type="submit"> Enviar </button>
     </form>
 </div>
