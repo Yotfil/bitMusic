@@ -85,7 +85,7 @@ function login(req, res) {
                                 token: jwt.userToken(user)
                             })
                         } else {
-                            res.status(200).send({ user })
+                            res.status(200).send({ token: jwt.userToken(user) })
                         }
                     } else {
                         res.status(404).send({ message: 'El usuario no ha podido logearse' })

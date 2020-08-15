@@ -12,11 +12,17 @@ import { RegisterSongComponent } from './Components/register-song/register-song.
 import { NombreTestComponent } from './Components/nombre-test/nombre-test.component';
 import { PageNotFoundComponent } from './Components/page-not-found/page-not-found.component';
 import { MySongsComponent } from './Components/my-songs/my-songs.component';
+import { CreateUserComponent } from './Components/create-user/create-user.component';
+import { LoginComponent } from './Components/login/login.component';
+
+import { AuthGuard } from './guards/auth.guard';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'registrarCancion', component: RegisterSongComponent },
-  { path: 'misCanciones', component: MySongsComponent },
+  { path: 'registrarCancion', canActivate: [AuthGuard],  component: RegisterSongComponent },
+  { path: 'misCanciones', canActivate: [AuthGuard], component: MySongsComponent },
+  { path: 'registrarUsuario', component: CreateUserComponent },
+  { path: 'login', component: LoginComponent },
   { path: '**', component: PageNotFoundComponent }//Ruta para cuando no encontramos una página
 ]
 
@@ -29,7 +35,9 @@ const appRoutes: Routes = [
     RegisterSongComponent,
     NombreTestComponent,
     PageNotFoundComponent,
-    MySongsComponent
+    MySongsComponent,
+    CreateUserComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
