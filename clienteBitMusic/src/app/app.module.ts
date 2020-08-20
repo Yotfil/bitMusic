@@ -14,8 +14,10 @@ import { PageNotFoundComponent } from './Components/page-not-found/page-not-foun
 import { MySongsComponent } from './Components/my-songs/my-songs.component';
 import { CreateUserComponent } from './Components/create-user/create-user.component';
 import { LoginComponent } from './Components/login/login.component';
+import { UpdateUserComponent } from './Components/update-user/update-user.component';
 
 import { AuthGuard } from './guards/auth.guard';
+
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,6 +25,8 @@ const appRoutes: Routes = [
   { path: 'misCanciones', canActivate: [AuthGuard], component: MySongsComponent },
   { path: 'registrarUsuario', component: CreateUserComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'modificarUsuario', canActivate: [AuthGuard], component: UpdateUserComponent },
+
   { path: '**', component: PageNotFoundComponent }//Ruta para cuando no encontramos una página
 ]
 
@@ -37,7 +41,8 @@ const appRoutes: Routes = [
     PageNotFoundComponent,
     MySongsComponent,
     CreateUserComponent,
-    LoginComponent
+    LoginComponent,
+    UpdateUserComponent
   ],
   imports: [
     BrowserModule,

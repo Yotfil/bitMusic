@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 
 import { UserService } from '../../services/user.service';
 
@@ -27,7 +27,7 @@ export class CreateUserComponent implements OnInit {
     this.userForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastname: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, this.validateEmailField] ],
       password: ['', Validators.required]
     })
   }
@@ -47,6 +47,20 @@ export class CreateUserComponent implements OnInit {
     }else{
       alert("Debes llenar todos los campos")
     }
+  }
+
+  validateEmailField(emailField: AbstractControl){
+    const email = emailField.value.split('@')[1];
+    console.log('email --> ', email)
+    //paola.cuadros@bit.institute
+    /**
+     * ['paola.cuadros', 'bit.institute'] => split => corta el elemento
+     */
+
+    if(email != 'bit.institute'){
+      return { emailInvalid: true };
+    }
+    return null;
   }
 
 }

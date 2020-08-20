@@ -101,6 +101,16 @@ function update(req, res) {
     const userId = req.params.id
     let paramsBody = req.body
 
+    if (req.files.image) {
+        let routeImage = req.files.image.path;
+        let splitImage = routeImage.split('\\');
+        /**
+         * ['/uplopad', 'image', 'nombreArchivo']
+         */
+        paramsBody.image = splitImage[splitImage.length - 1];
+    }
+
+
     if (paramsBody.password) {
         bcrypt.hash(paramsBody.password, null, null, function(err, hash) {
             paramsBody.password = hash
@@ -118,14 +128,15 @@ function update(req, res) {
             })
         })
     } else {
-        User.findByIdAndUpdate(userId, paramsBody, (err, userUpdated) => {
+        //{ new: true } => Permite obtener los datos actualizados del usuario.
+        User.findByIdAndUpdate(userId, paramsBody, { new: true }, (err, userUpdated) => {
             if (err) {
                 res.status(500).send({ message: 'Error al actualizar usuario' })
             } else {
                 if (!userUpdated) {
                     res.status(404).send({ message: 'No se ha podido actualizar el usuario' })
                 } else {
-                    res.status(404).send({ user: userUpdated })
+                    res.status(200).send({ token: jwt.userToken(userUpdated) })
                 }
             }
         })

@@ -27,6 +27,10 @@ export class UserService {
     return this.http.post<User>(`${this.apiURL}/login`, formLogin);
   }
 
+  updateUser(formUser, idUser){
+    return this.http.put<User>(`${this.apiURL}/update/${idUser}`, formUser);
+  }
+
   /**
    * Metodo para almacenar el token de cuando el usuario hacen login
    * @param token 

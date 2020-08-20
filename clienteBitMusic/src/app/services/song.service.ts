@@ -4,37 +4,35 @@ import { Song } from '../models/Song'; //Cargamos el modelo
 import { UserService } from './user.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SongService {
-
   apiURL: String = 'http://localhost:3000/api';
 
-  constructor(
-    private http: HttpClient,
-    private user: UserService
-  ) { }
+  constructor(private http: HttpClient, private user: UserService) {}
 
-  prepareHeaders(){
+  prepareHeaders() {
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authorization': this.user.getToken()
-      })
-    }
+        Authorization: this.user.getToken(),
+      }),
+    };
   }
 
-    createSong(formData){
-      return this.http.post<Song>(`${this.apiURL}/create-song`, formData, this.prepareHeaders());
-    }
+  createSong(formData) {
+    return this.http.post<Song>(`${this.apiURL}/create-song`, formData);
+  }
 
-    getSongs(filter, page){
-      console.log('Esta es la ruta de page --> ', `${page}`)
-      return this.http.get(`${this.apiURL}/getAll/${page}${filter}`, this.prepareHeaders())
-    }
+  getSongs(filter, page) {
+    console.log('Esta es la ruta de page --> ', `${page}`);
+    return this.http.get(
+      `${this.apiURL}/getAll/${page}${filter}`,
+      this.prepareHeaders()
+    );
+  }
 
-    getTotalSongs(){
-      return  this.http.get(`${this.apiURL}/getTotalSongs`, this.prepareHeaders())
-    }
-
+  getTotalSongs() {
+    return this.http.get(`${this.apiURL}/getTotalSongs`, this.prepareHeaders());
+  }
 }

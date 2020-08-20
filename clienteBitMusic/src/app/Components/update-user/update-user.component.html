@@ -1,0 +1,39 @@
+<div class="container">
+    <h1> Actualizar usuario </h1>
+    <form [formGroup]="userForm" (ngSubmit)="updateUser()" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="firstName"> Nombre </label>
+            <input id="firstName" name="firstName" formControlName="firstName" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="lastname"> Apellido </label>
+            <input id="lastname" name="lastname" formControlName="lastname" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="email"> Email </label>
+            <input id="email" name="email" formControlName="email" type="email" class="form-control" />
+            <!--<div *ngIf="userForm.get('email').errors && userForm.get('email').dirty ">
+                <p *ngIf="userForm.get('email').hasError('emailInvalid')">El dominio del correo debe ser @bit.institute</p>
+            </div>-->
+        </div>
+
+        <div class="form-group">
+            <label for="image">Imagen</label>
+            <input id="image" name="image" formControlName="image" type="file" class="form-control" (change)="prepareImage($event)" />
+        </div>
+        <div class="form-group">
+            <img src="{{apiURL+'/get-image-user/'+this.user.image}}" width="100" height="100">
+        </div>
+
+
+        <div *ngIf="!userForm.valid">
+            <div class="text-danger">
+                Debes llenar todos los campos
+            </div>
+        </div>
+
+        <button class="btn btn-info">Enviar</button>
+    </form>
+</div>

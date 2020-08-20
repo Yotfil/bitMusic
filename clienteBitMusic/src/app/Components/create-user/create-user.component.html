@@ -14,6 +14,9 @@
         <div class="form-group">
             <label for="email"> Email </label>
             <input id="email" name="email" formControlName="email" type="email" class="form-control" />
+            <div *ngIf="userForm.get('email').errors && userForm.get('email').dirty ">
+                <p *ngIf="userForm.get('email').hasError('emailInvalid')">El dominio del correo debe ser @bit.institute</p>
+            </div>
         </div>
 
         <div class="form-group">
